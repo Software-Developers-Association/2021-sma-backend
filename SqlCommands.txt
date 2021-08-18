@@ -1,0 +1,36 @@
+- Show all of the databases
+> SHOW DATABASES;
+
+- Use a database
+> USE <db_name>;
+
+- Show tables
+> SHOW TABLES;
+
+- Describe the table (show the columns and it's types)
+> DESC <table_name>;
+
+- Create a database
+> CREATE DATABASE <db_name>;
+
+- Create a table
+> CREATE TABLE <tb_name> (
+	fieldName type,
+	fieldname type,
+	...
+);
+
+- Add a record into a table
+> INSERT INTO <tb_name> (fieldName1, fieldName2) VALUES (value1, value2);
+
+- Show all records and all columns from the table
+> SELECT * FROM <tb_name>
+
+- Show all records and specify the columns from the table
+> SELECT fieldName1, fieldName2 FROM <tb_name>;
+
+- Rename a column for a the sole purpose to prettify a report (aliasing)
+> SELECT fieldName1 AS alias1, fieldName2 AS alias2 FROM <tb_name>;
+
+- Update a record from a table
+> UPDATE <tb_name> SET fieldName1=newValue1, fieldName2=newValue2, ... WHERE fieldName=value;

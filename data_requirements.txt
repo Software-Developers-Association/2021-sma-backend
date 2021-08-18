@@ -1,0 +1,21 @@
+Users
+UserID (internal or external) (Unique), Username (Unique), Password, First Name, Last Name, Email (Unique), number of followers
+
+Posts
+PostID (Unique), UserID, Post Label, Post Text, Location (?), Image (?), tags (?, case-insensitive),
+likes, dislikes, comments, created_date, edited_date (?)
+
+Tags
+tag_id, tag_text (lower-case)
+
+Tag Usage
+tag_id, post_id
+
+Followers
+UserID, UserID
+
+Blocks
+UserID, UserID
+
+Favorites
+UserID, PostID
