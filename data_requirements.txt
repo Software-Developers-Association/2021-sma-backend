@@ -2,8 +2,11 @@ Users
 UserID (internal or external) (Unique), Username (Unique), Password, First Name, Last Name, Email (Unique), number of followers
 
 Posts
-PostID (Unique), UserID, Post Label, Post Text, Location (?), Image (?), tags (?, case-insensitive),
+post_id (Unique), UserID, Post Label, Post Text, Location (?), Image (?), tags (?, case-insensitive),
 likes, dislikes, comments, created_date, edited_date (?)
+
+Comments
+comm_id, post_id, text
 
 Tags
 tag_id, tag_text (lower-case)
@@ -18,4 +21,4 @@ Blocks
 UserID, UserID
 
 Favorites
-UserID, PostID
+UserID, post_id
