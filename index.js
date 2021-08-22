@@ -76,6 +76,38 @@ const main = () => {
 		}
 	});
 
+	app.delete("/users/:user_id", async (req, res) => {
+		/**
+		 * @type {UsersService}
+		 */
+		const usersService = ServiceLocator.getService(UsersService.name);
+
+		try {
+			const { payload, error } = await usersService.deleteUser(Number.parseInt(req.params.user_id));
+
+			if(error) {
+				// we relay a 404 since the resource does not exist,
+				// how do you delete something that does not exist?
+				res.status(404).json(error);
+			} else {
+				// we relay a 204 No Content, as this api
+				// does not send anything back for confirmation the record deleted
+				// that is what the status code is for.
+				// Remember, 200s is a GOOD thing, 400s, and 500s are BAD.
+				res.status(204).json(payload);
+
+				// alternatively you could send back a 200 Ok
+				// and a JSON message with some information, however,
+				// for us it was not needed or nessesary.
+			}
+		} catch(e) {
+			console.log(e);
+			// something catastrophic happened and is not the fault of the user (pending)
+			// but it is ours as developers, therefore return nothing and relay a 500 Internal Server Error.
+			res.status(500).end();
+		}
+	});
+
 	app.listen(port, () => {
 		console.log(`Listening on port ${port}.`);
 	});

@@ -28,7 +28,7 @@ class UsersService extends BaseService {
 
 	/**
 	 * @param {number} user_id
-	 * @returns {Promise<boolean>}
+	 * @returns {Promise<Result<Object>>}
 	 */
 	deleteUser(user_id) { }
 
