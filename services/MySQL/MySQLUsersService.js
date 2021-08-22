@@ -16,6 +16,61 @@ class MySQLUsersService extends UsersService {
 		 */
 		this.connection = connection;
 	}
+
+	async getAllUsers() {
+		/**
+		 * @type { Array<UsersService.User> }
+		 */
+		const users = []; // keeps track of all of the users we extracted
+
+		try {
+			await new Promise((resolve, reject) => {
+				// Keep in mind that this retrieves everything.
+				// This is BAD!
+				const query = this.connection.query({
+					sql: "SELECT * FROM `users`;"
+				});
+
+				// Going about it this way with the events,
+				// only gets you a row at a time. As the row data
+				// is fetched this event will be called so,
+				// we have to keep track of the users come in.
+
+				// Alternativly, you could easily do this without the events as we did before
+				// the "results" variable will contain all of the records (if there are any) in an
+				// Array.
+				query.on("result", (row, index) => {
+					//console.log(row, index);
+					users.push(row);
+				});
+	
+				query.on("fields", (fields, index) => {
+	
+				});
+	
+				query.on("error", (err) => {
+	
+				});
+	
+				query.on("packet", (packet) => {
+	
+				});
+	
+				query.on("end", () => {
+					//console.log("done");
+					resolve(users);
+				});
+			});
+
+			return new Result(users, null);
+		} catch(e) {
+			console.log(e);
+			return new Result(null, {
+				code: ERROR_CODES.DATABASE.UNKNOWN.NUM,
+				message: "Something went wrong."
+			})
+		}
+	}
 	
 	/**
 	 * @param {import("../UsersService").UserDTO} userDTO 

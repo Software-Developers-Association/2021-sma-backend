@@ -7,6 +7,10 @@ const ERROR_CODES = {
 		NOT_EXIST: {
 			NUM: 1010,
 			TXT: "NOT_EXIST"
+		},
+		UNKNOWN: {
+			NUM: 1020,
+			TXT: "UNKNOWN"
 		}
 	}
 };

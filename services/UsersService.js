@@ -46,7 +46,7 @@ class UsersService extends BaseService {
 	getUser(user_id) { }
 
 	/**
-	 * @returns {Promise<Array<User>>}
+	 * @returns {Promise<Result<Array<User>>>}
 	 */
 	getAllUsers() { }
 };

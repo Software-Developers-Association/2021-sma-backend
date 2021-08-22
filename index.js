@@ -51,6 +51,42 @@ const databaseSetup = async () => {
 };
 
 const main = () => {
+	app.get("/users", async (req, res) => {
+		/**
+		 * @type { UsersService }
+		 */
+		const usersService = ServiceLocator.getService(UsersService.name);
+
+		try {
+			const { payload: users, error } = await usersService.getAllUsers();
+
+			if(error) {
+				// This is bad, we don't have a way to determine what
+				// went wrong at this point. We need to test different situtations
+				// to see what could cause an error when trying to fetch data.
+				// At this current point, we can say the user did nothing wrong, so this
+				// is on us, ergo, 500 Internal Server Error is appropriate.
+				res.status(500).json(error);
+			} else {
+				// When you start to have lots and lots of records
+				// you should start thinking about "pagination" either
+				// cursor or offet based.
+				res
+					.status(200)
+					.json({
+						count: users.length,
+						users
+					});
+			}
+		} catch(e) {
+			// Something went VERY wrong, inspect the log
+			// and add guards to prevent this from happening and
+			// fail gracefully.
+			console.log(e);
+			res.status(500).end();
+		}
+	});
+
 	app.post("/users", async (req, res) => {
 		/**
 		 * @type {UsersService}
