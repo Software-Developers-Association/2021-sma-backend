@@ -35,7 +35,7 @@ class UsersService extends BaseService {
 	/**
 	 * @param {number} user_id 
 	 * @param {UserDTO} userDTO 
-	 * @returns {Promise<User>}
+	 * @returns {Promise<Result<User>>}
 	 */
 	updateUser(user_id, userDTO) { }
 

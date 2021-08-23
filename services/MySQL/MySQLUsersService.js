@@ -254,6 +254,93 @@ class MySQLUsersService extends UsersService {
 			})
 		}
 	}
+
+	/**
+	 * @param {number} user_id 
+	 * @param {import("../UsersService").UserDTO} userDTO 
+	 * @returns {Promise<Result<import("../UsersService").User>>}
+	 */
+	async updateUser(user_id, userDTO) {
+		// we just want to know if the user even exist...
+		const { error } = await this.getUser(user_id);
+
+		if(error) {
+			return new Result(null, error);
+		}
+
+		try {
+			await new Promise(async (resolve, reject) => {
+				// prevent a user from changing their own user_id
+				userDTO.user_id && delete userDTO.user_id;
+
+				// Extract the keys from the object as they are
+				// corresponding to the fields on the table
+				const keys = Object.keys(userDTO);
+				
+				if(keys.length === 0) {
+					// they sent an empty object, abort
+					return reject({
+						code: ERROR_CODES.DATABASE.MISSING_FIELD.NUM,
+						message: "Empty update request."
+					});
+				}
+
+				// we want to ensure that the order of the key=value pairing
+				// is in the same order as our generated listing below.
+				const values = keys.map(key => userDTO[key]);
+				
+				// The issue here now is that we have some properties but we have not verified
+				// if those properties are not columns in our table. This will error out
+				// if you try to update on a column that does not exist.
+
+				// In an UPDATE command the syntax is as follows:
+				// UPDATE <table_name> SET field1=value1, field2=value2, ... WHERE <condition>;
+				// We want to generate the field=value comma deliminated list.
+
+				// you will note that '?' in the string literal, this is because
+				// the mysql module will esacpe '?' values for us.
+
+				// READ: https://www.npmjs.com/package/mysql#escaping-query-values
+				const set = keys.map((key) => `${key}=?`).join(",");
+
+				this.connection.query({
+					sql: `UPDATE users SET ${set} WHERE user_id=?;`,
+
+					// The elipses (...) is known as the "spread" operator
+					// this allows us to copy the array of "values" into the
+					// surrounding array.
+					values: [...values, user_id]
+				}, (err, results, fields) => {
+					if(err) {
+						return reject(err);
+					}
+
+					resolve();
+				});
+			});
+
+			// Let's get the user we just updated and return that.
+			const { payload: user } = await this.getUser(user_id);
+
+			return new Result(user, null);
+		} catch(e) {
+			switch(e.errno) {
+				// This error will be tripped if a user attempts
+				// to update a column that is marked UNIQUE and the value
+				// they are attempting to update already exists in an other record
+				// in the table. Example, email, username.
+				case 1062: {
+					return new Result(null, {
+						code: ERROR_CODES.DATABASE.DUPLICATE.NUM,
+						message: e.sqlMessage // We SHOULD parse this out ourselves and genrate a generic message but for now this is fine.
+					});
+				}
+				// Try to break this and add more case errors!
+			}
+
+			return new Result(null, e);
+		}
+	}
 };
 
 module.exports = MySQLUsersService;

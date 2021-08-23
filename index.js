@@ -192,6 +192,26 @@ const main = () => {
 		}
 	});
 
+	app.put("/users/:user_id", async (req, res) => {
+		/**
+		 * @type {UsersService}
+		 */
+		const usersService = ServiceLocator.getService(UsersService.name);
+
+		try {
+			const { payload: updatedUser, error } = await usersService.updateUser(req.params.user_id, req.body);
+
+			if(error) {
+				res.status(400).json(error);
+			} else {
+				res.status(200).json(updatedUser);
+			}
+		} catch(e) {
+			console.log(e);
+			res.status(500).end();
+		}
+	});
+
 	app.listen(port, () => {
 		console.log(`Listening on port ${port}.`);
 	});

@@ -11,6 +11,10 @@ const ERROR_CODES = {
 		UNKNOWN: {
 			NUM: 1020,
 			TXT: "UNKNOWN"
+		},
+		MISSING_FIELD: {
+			NUM: 1030,
+			TXT: "MISSING_FIELD"
 		}
 	}
 };
