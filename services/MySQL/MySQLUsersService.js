@@ -17,6 +17,46 @@ class MySQLUsersService extends UsersService {
 		this.connection = connection;
 	}
 
+	/**
+	 * @param {number} user_id 
+	 * @returns {Promise<Result<import("../UsersService").User>>}
+	 */
+	async getUser(user_id) {
+		/**
+		 * @type {Promise<import("../UsersService").User>}
+		 */
+		const getUserCMD = new Promise((resolve, reject) => {
+			this.connection.query({
+				sql: "SELECT * FROM `users` WHERE `user_id`=?;",
+				values: [user_id]
+			}, (err, results, fields) => {
+				if(err) {
+					return reject(err);
+				}
+
+				if(!results || results.length === 0) {
+					return reject({
+						code: ERROR_CODES.DATABASE.NOT_EXIST.NUM,
+						message: `User with id "${user_id}" does not exist.`
+					});
+				}
+
+				resolve(results[0]);
+			});
+		});
+		
+		try {
+			const user = await getUserCMD;
+
+			return new Result(user, null);
+		} catch(e) {
+			return new Result(null, e);
+		}
+	}
+
+	/**
+	 * @returns {Promise<Result<Array<import("../UsersService").User>>}
+	 */
 	async getAllUsers() {
 		/**
 		 * @type { Array<UsersService.User> }

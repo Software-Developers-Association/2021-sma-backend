@@ -51,6 +51,54 @@ const databaseSetup = async () => {
 };
 
 const main = () => {
+	app.get("/users/:user_id", async (req, res) => {
+		/**
+		 * @type { UsersService }
+		 */
+		const userService = ServiceLocator.getService(UsersService.name);
+
+		try {
+			const { payload: user, error } = await userService.getUser(Number.parseInt(req.params.user_id));
+
+			if(error) {
+				// we want to distinguish between IError, and Error
+				// IError is what we created which is just a typedef
+				// it's not a real type, just a JSObject with code & message properties.
+				// Error is a real class so the 'name' property will infact exist.
+				// The reason why we want to distinguish is because if an error
+				// is thrown, we do not want to leak information to the client this can be
+				// a security problem.
+				// This should be handled better.
+				if(error.name) {
+					// we need to be storying the req and error to an internal log file
+					// so that we can reproduce and also address any errors.
+					console.log(error);
+
+					// For now, let's assume that if an error has occured that we have yet to see and handle,
+					// let's panic with a 500.
+					res.status(500).end();
+				} else {
+					// The user's request could not be fullfilled thus, we fallback
+					// to a 400 Bad Request.
+					res.status(400).json(error);
+				}
+
+			} else {
+				res.status(200).json(user);
+			}
+		} catch(e) {
+			// As mentioned above, these types of error need to be dealt with
+			// by logging the request and also the error so we can address them
+			// to prevent issues. For now, we will simply log to the console, so always come back
+			// and check on the console and see if there are any issues.
+			console.log(e);
+
+			// As usual something terrible has happened here
+			// we panic and relay a 500 error.
+			res.status(500).end();
+		}
+	});
+
 	app.get("/users", async (req, res) => {
 		/**
 		 * @type { UsersService }
