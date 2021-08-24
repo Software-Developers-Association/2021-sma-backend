@@ -34,16 +34,22 @@ const databaseSetup = async () => {
 		});
 
 		const MySQLUsersService = require("./services/MySQL/MySQLUsersService");
+		const MySQLTagsService = require("./services/MySQL/MySQLTagsService");
 		const ServiceLocator = require("./services/ServiceLocator");
 		const UsersService = require("./services/UsersService");
+		const TagsService = require("./services/TagsService");
 
 		const usersService = new MySQLUsersService(connection);
-
 		await usersService.init();
 
 		ServiceLocator.setService(UsersService.name, usersService);
+		console.log(`${UsersService.name} initialized`);
 
-		console.log("UsersService Intialized.");
+		const tagsService = new MySQLTagsService(connection);
+		await tagsService.init();
+
+		ServiceLocator.setService(TagsService.name, tagsService);
+		console.log(`${TagsService.name} initialized`);
 
 		console.log("Database setup complete.");
 	} catch (e) {
